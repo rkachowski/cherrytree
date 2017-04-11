@@ -2884,23 +2884,33 @@ iter_end, exclude_iter_sel_end=True)
         now_year = support.get_timestamp_str("%Y", curr_time)
         now_month = support.get_timestamp_str("%B", curr_time)
         now_day = support.get_timestamp_str("%d %a", curr_time)
-        #print now_year, now_month, now_day
+        now_time = support.get_timestamp_str("%H.%M", curr_time)
+
+        #test if tree model row value is equal to the param
+        tmr_value_equals = lambda x: self.treestore[self.curr_tree_iter][1] == x
+
         if self.curr_tree_iter:
             curr_depth = self.treestore.iter_depth(self.curr_tree_iter)
             if curr_depth == 0:
-                if self.treestore[self.curr_tree_iter][1] == now_year:
+                if tmr_value_equals(now_year):
                     self.node_child_exist_or_create(self.curr_tree_iter, now_month)
                     self.node_date()
                     return
             else:
-                if self.treestore[self.curr_tree_iter][1] == now_month\
+                if tmr_value_equals(now_day)\
+                and self.treestore[self.treestore.iter_parent(self.curr_tree_iter)][1] == now_month:
+                    self.node_child_exist_or_create(self.curr_tree_iter, now_time)
+                    return
+                if tmr_value_equals(now_month)\
                 and self.treestore[self.treestore.iter_parent(self.curr_tree_iter)][1] == now_year:
                     self.node_child_exist_or_create(self.curr_tree_iter, now_day)
+                    self.node_date()
                     return
-                if self.treestore[self.curr_tree_iter][1] == now_year:
+                if tmr_value_equals(now_year):
                     self.node_child_exist_or_create(self.curr_tree_iter, now_month)
                     self.node_date()
                     return
+
         self.node_child_exist_or_create(None, now_year)
         self.node_date()
 
